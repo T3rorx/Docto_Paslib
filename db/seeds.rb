@@ -1,42 +1,69 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
-
-
 require "faker"
 
-specialties = %w[ophtalmo generale kine cardiologie angiologie]
+puts "Cleaning database..."
+Appointment.destroy_all
+Doctor.destroy_all
+Patient.destroy_all
+Speciality.destroy_all
+City.destroy_all
 
-# 10 patients
-10.times do
+puts "Creating cities..."
+city_names = %w[Paris Lyon Marseille Toulouse Bordeaux Nantes Lille Nice Rennes Strasbourg]
+cities = city_names.map { |name| City.create!(name: name) }
+
+puts "Creating specialities..."
+speciality_names = [
+  "Medecine generale",
+  "Cardiologie",
+  "Dermatologie",
+  "Pediatrie",
+  "Ophtalmologie",
+  "Neurologie"
+]
+specialities = speciality_names.map { |name| Speciality.create!(name: name) }
+
+puts "Creating patients..."
+patients = Array.new(25) do
   Patient.create!(
     first_name: Faker::Name.first_name,
     last_name:  Faker::Name.last_name,
-    age: rand(10..80)
+    age:        rand(1..95)
   )
 end
 
-# 10 doctors
-10.times do
-  Doctor.create!(
+puts "Creating doctors..."
+doctors = []
+
+# Ensure each speciality has at least one doctor associated
+specialities.each do |speciality|
+  doctors << Doctor.create!(
     first_name: Faker::Name.first_name,
     last_name:  Faker::Name.last_name,
-    specialty:  specialties.sample,
-    zip_code:   Faker::Address.zip_code
+    speciality: speciality,
+    city:       cities.sample
   )
 end
 
-# 30 appointments
-30.times do
-  Appointment.create!(
-    date:       Faker::Time.between(from: Time.now, to: 30.days.from_now),
-    doctor_id:  rand(1..10),
-    patient_id: rand(1..10)
+# Add a few more doctors with random combinations for variety
+8.times do
+  doctors << Doctor.create!(
+    first_name: Faker::Name.first_name,
+    last_name:  Faker::Name.last_name,
+    speciality: specialities.sample,
+    city:       cities.sample
   )
 end
+
+puts "Creating appointments..."
+40.times do
+  doctor = doctors.sample
+  patient = patients.sample
+
+  Appointment.create!(
+    date:    Faker::Time.between(from: Time.current, to: 45.days.from_now),
+    doctor:  doctor,
+    patient: patient
+  )
+end
+
+puts "Seeding completed!"

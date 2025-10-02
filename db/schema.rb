@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_01_141904) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_02_162421) do
   create_table "appointments", force: :cascade do |t|
     t.datetime "date"
     t.integer "doctor_id"
@@ -19,13 +19,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_01_141904) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "cities", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "doctors", force: :cascade do |t|
     t.string "first_name"
     t.string "last_name"
     t.string "specialty"
-    t.string "zip_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "city_id"
+    t.integer "speciality_id"
+    t.index ["city_id"], name: "index_doctors_on_city_id"
+    t.index ["speciality_id"], name: "index_doctors_on_speciality_id"
   end
 
   create_table "patients", force: :cascade do |t|
@@ -35,4 +44,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_01_141904) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  create_table "specialities", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "doctors", "cities"
+  add_foreign_key "doctors", "specialities"
 end

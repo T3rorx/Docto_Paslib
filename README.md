@@ -1,68 +1,67 @@
-# README
-
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
 
 Visualisation de la  DB
 
-https://dbdiagram.io/d
-
-// Use DBML to define your database structure
-// Docs: https://dbml.dbdiagram.io/docs
-
-Table doctors {
+Table doctor {
   id integer [primary key]
   first_name string
   last_name string
   speciality string
   zip_code integer
+  city_id intager
+  speciality_id string
   created_at timestamp
 }
 
 
-Table patients {
+Table patient {
   id integer [primary key]
   first_name string
   last_name varchar
   created_at timestamp
 }
 
-Table appointments {
+Table appointment {
+  id integer [primary key]
  date datetime
  doctor_id intager
  patient_id intager
   created_at timestamp
 }
 
-Ref appointments_doctor: appointments.doctor_id > doctors.id
-Ref appointments_patient: appointments.patient_id > patients.id
+Table city {
+id integer [primary key]
+zip_code string
+  created_at timestamp
+}
+
+Table speciality {
+id integer [primary key]
+specialty string
+  created_at timestamp
+}
 
 
-<!-- # rails g model Doctor first_name:string last_name:string specialty:string zip_code:string
+Ref appointments_doctor: appointment.doctor_id > doctor.id
+Ref appointments_patient: appointment.patient_id > patient.id
+Ref doctor_city: doctor.city_id > city.id
+Ref doctor_speciality: doctor.speciality_id > speciality.id
 
-# rails g model Patient first_name:string last_name:string age:integer
 
-# rails g model Appointment date:datetime doctor_id:integer patient_id:integer -->
+rails new ****
+
+# rails g model Doctor first_name:string last_name:string specialty:string zip_code:string
+
+## rails g migration Doctor city_id:intager speciality_id:intager
+
+# rails g model Patient first_name:string last_name:string age:integer 
+## rails g migration Patient first_name:string last_name:string age:integer city_id:intager
+
+# rails g model Appointment date:datetime doctor_id:integer patient_id:integer
+## rails g migration Appointment date:datetime doctor_id:integer patient_id:integer city_id:intager
+
+## rails g model city name:string
+
+## rails g model speciality name:string 
 
 class Appointment < ApplicationRecord
   belongs_to :doctor
@@ -126,3 +125,10 @@ end
 #     my_rating: nil
 #   )
 # end
+
+
+recherche de liens
+
+Patient.third.doctors
+Doctor.third.patients
+Doctor.find(296).patients
